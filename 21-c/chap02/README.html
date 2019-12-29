@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>README.html</title>
+<meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8"/>
+<link rel="stylesheet" type="text/css" media="all" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css"  />
+<link rel="stylesheet" type="text/css" media="all" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/github.min.css"  /><meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'><style> body { box-sizing: border-box; max-width: 740px; width: 100%; margin: 40px auto; padding: 0 10px; } </style><script src='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js'></script><script>document.addEventListener('DOMContentLoaded', () => { document.body.classList.add('markdown-body'); document.querySelectorAll('pre[lang] > code').forEach((code) => { code.classList.add(code.parentElement.lang); hljs.highlightBlock(code); }); }); </script>
+</head>
+
+<body>
+
+<h1 id="第-2-章-调试测试和文档">第 2 章 调试、测试和文档</h1>
+<p>调试: 1. 程序逻辑问题(使用 GDB ) 2. 内存滥用和泄露问题(使用 Valgrind)</p>
+<p>文档: 1. 文档管理工具(Doxgen) 2. 程序每一步归档工具(CWEB, git)</p>
+<h2 id="使用调试器">2.1 使用调试器</h2>
+<blockquote>
+<p>永远使用调试器</p>
+</blockquote>
+<p><strong>堆栈帧</strong></p>
+<p>启动 <code>main</code> 的时候系统会创建一个帧来存变量和函数信息，每调用一个新的函数就会有一个新的帧被 加入到堆上，函数结束执行以后，堆上的帧会被 <strong>弹出</strong>。</p>
+<p>使用 <code>backtrace</code> 命令可以看到堆栈帧的列表。结果格式如下:</p>
+<pre class="shell"><code>#地址后面是函数名、它的输入参数（恰好argv也 是一个十六进制地址），以及当前执行到的源代码行号。
+#2 0x00404f9b in main (argc=1, argv=0x7fffffffe278) at addresses.c:227</code></pre>
+<h3 id="调试的侦探工作">2.1.1 调试的侦探工作</h3>
+<p><a href="https://raw.githubusercontent.com/fierlion/modern-c/master/debuglearn/bugged/stddev_bugged.c">stddev-bugged.c</a></p>
+<p>编译程序的时候需要添加 <code>-g</code> flag。</p>
+<p>使用 <code>gdb stddev_bugged.out</code> 来启动程序.</p>
+<p>在 <code>gdb</code> 的窗口中用 <code>r</code> 来运行程序。</p>
+<p>在 <code>gdb</code> 的窗口中用 <code>list</code> 或简写 <code>l</code> 来查看代码。</p>
+<p>如果需要在某个函数暂停，需要在那里放置一个断点 <code>break</code> 或简写 <code>b</code>, <code>break [num]</code> 或者 <code>break [func]</code> 都可以。</p>
+<p>使用 <code>print</code> 或 <code>p</code> 来打印数据。 <code>p *data</code> 来打印数组， <code>p *data@10*</code> 打印数组的前十个元素。</p>
+<p>使用 <code>bt</code> 来回退。查看堆栈里面有几帧。使用 <code>f [num]</code> 来回退到某帧。如果想回到第 0 帧，可以使用 <code>down</code> 来回退。</p>
+<p>多线程的原因， <code>info threads(GDB)</code> 或者 <code>LLDB: thread list</code> 来获得线程的列表。 <code>*</code> 代表我们正在 那个线程调试。可以在 <code>.gdbinit</code> 里面关闭新线程的同志 <code>set print thread-events off</code>。</p>
+<p>单步调试 <code>n</code>。单步执行等。 <code>snuc</code> 这四个命令中的一个。</p>
+<p>使用 <code>LLDB: break list</code> 和 <code>GDB: info break</code> 来查看断点。</p>
+<p>如果不在需要某个断点，可以使其处在不活跃状态, <code>GDB: dis 1</code> 或 <code>LLDB: break dis 1</code>。重新启动可以 使用 <code>GDB: enable 1</code> 或者 <code>LLDB: break enable 1</code> 来重使其有效。或者可以直接删除: <code>GDB: del 1</code> 或者 <code>LLDB: break dis 1</code>。</p>
+<p><code>r</code> 重新开始， <code>c</code> 继续运行程序。</p>
+<p><code>GDB: info local</code> 或 <code>LLDB: frame variable</code> 查看本地变量表。</p>
+<p><code>GDB: info args</code> 来查看输入的参数, <code>LLDB: frame variable</code> 包括了这一项。</p>
+<p><code>disp [variable]</code> 可以替代每次循环输入 <code>p [variable]</code>, 使用 <code>undisp [variable]</code> 来取消。</p>
+
+</body>
+</html>
